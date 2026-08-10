@@ -1,13 +1,13 @@
-package com.myapp;
+package pkgs.myapp;
 
 public class User {
   
-    // 1. Private fields (Encapsulation)
+    //  (Encapsulation)
     private int id;
     private String name;
     private String email;
 
-    // 2. Constructor
+    //  Constructor
     public User(int id, String name, String email) {
         this.id = id;
         this.name = name;
