@@ -4,133 +4,412 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLOps Real Estate Predictor</title>
+    <title>House Price Predictor | MLOps</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
+        :root {
+            --ink: #12263f;
+            --muted: #64748b;
+            --line: #dbe4ef;
+            --surface: #fff;
+            --canvas: #f4f7fb;
+            --accent: #2563eb;
+            --accent-dark: #1d4ed8;
+            --success-bg: #ecfdf3;
+            --success-ink: #087443;
         }
 
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 450px;
+        * {
+            box-sizing: border-box;
+        } 
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            color: var(--ink);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: radial-gradient(circle at 0% 0%, #dbeafe 0, transparent 30rem), var(--canvas);
+        }
+
+        .topbar {
+            height: 72px;
+            padding: 0 max(24px, calc((100% - 1180px) / 2));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, .92);
+            border-bottom: 1px solid rgba(219, 228, 239, .9);
+            backdrop-filter: blur(12px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-weight: 750;
+            letter-spacing: -.02em;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 34px;
+            height: 34px;
+            color: #fff;
+            background: var(--accent);
+            border-radius: 10px;
+            box-shadow: 0 6px 14px rgba(37, 99, 235, .25);
+        }
+
+        .brand-mark svg {
+            width: 19px;
+            height: 19px;
+        }
+
+        .status {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            color: #23734f;
+            font-size: .84rem;
+            font-weight: 650;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 4px #dcfce7;
+        }
+
+        main {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 74px 24px 48px;
+        }
+
+        .eyebrow {
+            margin: 0 0 14px;
+            color: var(--accent);
+            font-size: .78rem;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            max-width: 670px;
+            margin: 0;
+            font-size: clamp(2rem, 4vw, 3.45rem);
+            line-height: 1.08;
+            letter-spacing: -.055em;
+        }
+
+        .intro {
+            max-width: 610px;
+            margin: 18px 0 42px;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.65;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+            overflow: hidden;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            box-shadow: 0 22px 60px rgba(40, 61, 91, .11);
+        }
+
+        .form-panel {
+            padding: 38px;
+        }
+
+        .panel-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
         }
 
         h2 {
-            margin-top: 0;
-            color: #333;
-            text-align: center;
+            margin: 0;
+            font-size: 1.25rem;
+            letter-spacing: -.025em;
         }
 
-        .form-group {
-            margin-bottom: 15px;
+        .panel-heading p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        .required {
+            color: var(--muted);
+            font-size: .78rem;
+        }
+
+        .fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group:last-child {
+            grid-column: span 2;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: .88rem;
+            font-weight: 700;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-symbol {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            transform: translateY(-50%);
+            color: #8291a6;
+            font-size: .9rem;
+            font-weight: 700;
+            pointer-events: none;
         }
 
         input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
+            height: 48px;
+            padding: 0 14px 0 35px;
+            color: var(--ink);
+            background: #fbfcfe;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            font: inherit;
+            font-weight: 600;
+            outline: none;
+            transition: border-color .16s, box-shadow .16s, background .16s;
+        }
+
+        input:focus {
+            background: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+        }
+
+        .hint {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: .76rem;
         }
 
         button {
             width: 100%;
-            padding: 12px;
-            background: #007bff;
-            border: none;
-            color: white;
-            font-size: 16px;
-            border-radius: 4px;
+            height: 52px;
+            margin-top: 30px;
+            border: 0;
+            border-radius: 9px;
+            color: #fff;
+            background: var(--accent);
             cursor: pointer;
-            font-weight: bold;
+            font: inherit;
+            font-size: .95rem;
+            font-weight: 750;
+            box-shadow: 0 9px 18px rgba(37, 99, 235, .22);
+            transition: transform .16s, background .16s, box-shadow .16s;
         }
 
         button:hover {
-            background: #0056b3;
+            background: var(--accent-dark);
+            box-shadow: 0 12px 22px rgba(37, 99, 235, .28);
+            transform: translateY(-1px);
         }
 
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 18px;
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
             display: none;
+            margin-top: 20px;
+            padding: 15px 17px;
+            border-radius: 9px;
+            font-size: .92rem;
         }
 
         .success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            display: block;
+            color: var(--success-ink);
+            background: var(--success-bg);
+            border: 1px solid #bbf7d0;
+        }
+
+        .info-panel {
+            padding: 38px;
+            color: #fff;
+            background: linear-gradient(145deg, #123c75, #172b4d);
+        }
+
+        .info-panel .eyebrow {
+            color: #93c5fd;
+        }
+
+        .info-panel h2 {
+            color: #fff;
+            font-size: 1.45rem;
+            line-height: 1.3;
+        }
+
+        .info-panel>p:not(.eyebrow) {
+            margin: 14px 0 31px;
+            color: #cbd9ee;
+            line-height: 1.65;
+            font-size: .93rem;
+        }
+
+        .metric {
+            padding: 17px 0;
+            border-top: 1px solid rgba(203, 217, 238, .2);
+        }
+
+        .metric:last-of-type {
+            border-bottom: 1px solid rgba(203, 217, 238, .2);
+        }
+
+        .metric-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #aebfda;
+            font-size: .76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .metric strong {
+            font-size: 1rem;
+        }
+
+        .model-note {
+            margin: 30px 0 0;
+            padding: 13px;
+            color: #d8e5f8;
+            background: rgba(255, 255, 255, .08);
+            border-radius: 8px;
+            font-size: .8rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width:760px) {
+            .topbar {
+                height: 64px;
+            }
+
+            .status {
+                font-size: .76rem;
+            }
+
+            main {
+                padding-top: 52px;
+            }
+
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .form-panel,
+            .info-panel {
+                padding: 28px 24px;
+            }
+
+            .fields {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group:last-child {
+                grid-column: auto;
+            }
         }
     </style>
 </head>
 
 <body>
-
-    <div class="card">
-        <h2>🏡 House Price Predictor</h2>
-        <div class="form-group">
-            <label>Number of avg_income</label>
-            <input type="number" id="avg_income" value="70">
-        </div>
-        <div class="form-group">
-            <label>Number of  house_age</label>
-            <input type="number" id="house_age" value="60" >
-        </div>
-        <div class="form-group">
-            <label>Number of Rooms</label>
-            <input type="number" id="num_rooms" value="5">
-        </div>
-        <button onclick="getPrediction()">Predict house Price</button>
-
-        <div id="result"></div>
-    </div>
-
+    <header class="topbar">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.2">
+                    <path d="m3 11 9-7 9 7v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+                    <path d="M9 21v-6h6v6" />
+                </svg></span>Property Intelligence</div>
+        <div class="status"><span class="status-dot"></span>Prediction service online</div>
+    </header>
+    <main>
+        <p class="eyebrow">Real estate valuation</p>
+        <h1>Make confident property decisions with data.</h1>
+        <p class="intro">Enter a few property indicators to generate an instant estimated house price from the deployed
+            machine-learning model.</p>
+        <section class="workspace" aria-label="House price estimation tool">
+            <div class="form-panel">
+                <div class="panel-heading">
+                    <div>
+                        <h2>Property details</h2>
+                        <p>Provide the inputs used by the valuation model.</p>
+                    </div><span class="required">All fields required</span>
+                </div>
+                <div class="fields">
+                    <div class="form-group"><label for="avg_income">Average income</label>
+                        <div class="input-wrap"><span class="input-symbol">$</span><input type="number" id="avg_income"
+                                value="70"></div>
+                        <p class="hint">Area average income level</p>
+                    </div>
+                    <div class="form-group"><label for="house_age">House age</label>
+                        <div class="input-wrap"><span class="input-symbol">#</span><input type="number" id="house_age"
+                                value="60"></div>
+                        <p class="hint">Age of the property</p>
+                    </div>
+                    <div class="form-group"><label for="num_rooms">Number of rooms</label>
+                        <div class="input-wrap"><span class="input-symbol">#</span><input type="number" id="num_rooms"
+                                value="5"></div>
+                        <p class="hint">Total rooms in the house</p>
+                    </div>
+                </div>
+                <button onclick="getPrediction()">Generate price estimate</button>
+                <div id="result" class="result" role="status" aria-live="polite"></div>
+            </div>
+            <aside class="info-panel">
+                <p class="eyebrow">Model snapshot</p>
+                <h2>A clear starting point for your valuation.</h2>
+                <p>The estimate is generated in real time from your submitted property signals.</p>
+                <div class="metric"><span class="metric-label">Prediction type</span><strong>Estimated market
+                        price</strong></div>
+                <div class="metric"><span class="metric-label">Data inputs</span><strong>Income, age &amp;
+                        rooms</strong></div>
+                <div class="metric"><span class="metric-label">Delivery</span><strong>Real-time API inference</strong>
+                </div>
+                <p class="model-note">Estimates are model-generated and should be used alongside local market research
+                    and professional advice.</p>
+            </aside>
+        </section>
+    </main>
     <script>
         async function getPrediction() {
             const resultDiv = document.getElementById('result');
-            const payload = {
-                avg_income: document.getElementById('avg_income').value,
-                house_age: document.getElementById('house_age').value,
-                num_rooms: document.getElementById('num_rooms').value
-            };
-
+            const payload = { avg_income: document.getElementById('avg_income').value, house_age: document.getElementById('house_age').value, num_rooms: document.getElementById('num_rooms').value };
             try {
                 // "backend" maps directly to the container service network name inside Docker
-                const response = await fetch('http://localhost:5000/predict', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload) // JavaScript maps straight to Pydantic attributes
-                });
-
+                const response = await fetch('http://localhost:5000/predict', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await response.json();
                 if (data.status === 'success') {
-                    resultDiv.className = "success";
+                    resultDiv.className = "result success";
                     resultDiv.style.display = "block";
                     resultDiv.innerHTML = `<strong>Estimated price of house:</strong> ${data?.estimated_marks.toLocaleString()}`;
-                } else {
-                    alert("Error: " + data.message);
-                }
-            } catch (error) {
-                alert("Failed connecting to Flask API backend service.");
-            }
+                } else { alert("Error: " + data.message); }
+            } catch (error) { alert("Failed connecting to Flask API backend service."); }
         }
     </script>
 </body>
