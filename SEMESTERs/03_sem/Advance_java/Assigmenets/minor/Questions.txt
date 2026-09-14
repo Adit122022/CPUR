@@ -1,0 +1,10 @@
+1. Write a program that removes duplicates from a list while maintaining original order.
+2. Write a program that counts how many times each word appears in a sentence.
+3. Write a program using  HashMap to find two numbers that add up to target in O(n) time.
+4. Write a program to find the k most frequently occurring elements in a given array,
+5. Write a program to find the first unique number in a stream of numbers (you can only traverse once).
+6. Write a program to rearrange characters in a string so that no two same characters are adjacent (use PriorityQueue).
+7. Write a program to flatten a nested list of integers (example: [[1,2],[3,[4,5]]] → [1,2,3,4,5])
+8. Given a list of transactions (userId, amount), write a program to find the user who spent the maximum total amount.
+9. Write a program to sort a list of students by marks (descending). If marks are equal, sort by name.
+10. Write a program that reads employee data from database, stores it in a List, and uses Streams + Comparator to find the 2nd highest paid employee.
