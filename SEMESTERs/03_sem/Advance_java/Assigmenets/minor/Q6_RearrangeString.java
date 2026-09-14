@@ -1,88 +1,64 @@
+// 6. Write a program to rearrange characters in a string so that no two same characters are adjacent (use PriorityQueue).
 import java.util.*;
 
-/**
- * Q6: Rearrange characters so no two adjacent characters are the same.
- *     Must use PriorityQueue (Max-Heap).
- *
- * Algorithm (Greedy + Max-Heap):
- *  1. Build a frequency map for each character.
- *  2. Add all (char, freq) pairs to a Max-Heap ordered by frequency.
- *  3. At each step:
- *       a. Poll the most-frequent character (prev).
- *       b. Append it to the result.
- *       c. Poll the second most-frequent character (curr) and append it.
- *       d. Decrement counts; re-insert back if count > 0.
- *       e. If only one character type remains and its freq > 1, it's impossible.
- *
- * Time : O(n log k) — k unique characters, at most 26
- * Space: O(k)
- */
 public class Q6_RearrangeString {
 
-    public static String rearrange(String s) {
-        if (s == null || s.isEmpty()) return s;
+    static class CharFreq {
+        char ch;
+        int count;
+        
+        CharFreq(char ch, int count) {
+            this.ch = ch;
+            this.count = count;
+        }
+    }
 
-        // Step 1: frequency map
-        Map<Character, Integer> freqMap = new HashMap<>();
+    public static String rearrange(String s) {
+
+        Map map = new HashMap<>();
         for (char c : s.toCharArray()) {
-            freqMap.put(c, freqMap.getOrDefault(c, 0) + 1);
+            map.put(c, map.getOrDefault(c, 0) + 1);
         }
 
-        // Step 2: Max-Heap by frequency
-        PriorityQueue<int[]> maxHeap = new PriorityQueue<>(
-            (a, b) -> b[1] - a[1]          // sort descending by count
-        );
-        for (Map.Entry<Character, Integer> entry : freqMap.entrySet()) {
-            maxHeap.offer(new int[]{entry.getKey(), entry.getValue()});
+        PriorityQueue maxHeap = new PriorityQueue<>((a, b) -> b.count - a.count);
+        
+    
+        for (Character key : map.keySet()) {
+            maxHeap.offer(new CharFreq(key, map.get(key)));
         }
 
         StringBuilder result = new StringBuilder();
+        CharFreq prev = null; 
 
-        // Step 3: Greedy placement
-        while (maxHeap.size() >= 2) {
-            int[] first  = maxHeap.poll();   // most frequent
-            int[] second = maxHeap.poll();   // second most frequent
+        while (!maxHeap.isEmpty()) {
+            CharFreq current = maxHeap.poll(); 
+            
+            result.append(current.ch); 
+            current.count--; 
 
-            result.append((char) first[0]);
-            result.append((char) second[0]);
+           
+            if (prev != null && prev.count > 0) {
+                maxHeap.offer(prev);
+            }
 
-            if (--first[1]  > 0) maxHeap.offer(first);
-            if (--second[1] > 0) maxHeap.offer(second);
+          
+            prev = current;
         }
 
-        // One character type left
-        if (!maxHeap.isEmpty()) {
-            int[] last = maxHeap.poll();
-            if (last[1] > 1) {
-                // Impossible: e.g., "aaa" cannot be rearranged
-                return "IMPOSSIBLE — cannot rearrange \"" + s + "\"";
-            }
-            result.append((char) last[0]);
+        if (result.length() != s.length()) {
+            return "";
         }
 
         return result.toString();
     }
 
     public static void main(String[] args) {
-        String[] tests = {"aab", "aaab", "aaabb", "abcdef", "aaaabc"};
+        String str1 = "aab";
+        System.out.println("Original: " + str1 + " -> Rearranged: " + rearrange(str1)); 
+       
 
-        for (String test : tests) {
-            String out = rearrange(test);
-            System.out.println("Input  : " + test);
-            System.out.println("Output : " + out);
-
-            // Validate (no two adjacent same chars)
-            boolean valid = !out.startsWith("IMPOSSIBLE");
-            if (valid) {
-                for (int i = 1; i < out.length(); i++) {
-                    if (out.charAt(i) == out.charAt(i - 1)) {
-                        valid = false;
-                        break;
-                    }
-                }
-            }
-            System.out.println("Valid  : " + valid);
-            System.out.println();
-        }
+        String str2 = "aaab";
+        System.out.println("Original: " + str2 + " -> Rearranged: " + rearrange(str2)); 
+    
     }
 }

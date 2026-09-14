@@ -2,8 +2,7 @@ import java.util.*;
 import java.util.stream.*;
 
 /**
- * Q10: Read employee data from a "database" (simulated with a List), store it in a List,
- *      and use Streams + Comparator to find the 2nd highest paid employee.
+10. Write a program that reads employee data from database, stores it in a List, and uses Streams + Comparator to find the 2nd highest paid employee.
  *
  * In a real application you would replace the `loadEmployeesFromDB()` method with
  * a JDBC / JPA call.  Here we simulate the DB with an in-memory list.

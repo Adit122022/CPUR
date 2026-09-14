@@ -1,64 +1,47 @@
-import java.util.*;
-
 /**
- * Q9: Sort a list of students by marks (descending).
+ * 9. Write a program to sort a list of students by marks (descending). If marks are equal, sort by name.
  *     If marks are equal, sort by name (ascending — alphabetical).
  *
  * Uses a multi-key Comparator:
  *   Comparator.comparingInt(Student::getMarks).reversed()
  *             .thenComparing(Student::getName)
  */
+import java.util.*;
+
 public class Q9_SortStudents {
 
-    // ---------- Student model ----------
     static class Student {
-        private final String name;
-        private final int    marks;
+        String name;
+        int marks;
 
         Student(String name, int marks) {
-            this.name  = name;
+            this.name = name;
             this.marks = marks;
         }
 
-        public String getName()  { return name;  }
-        public int    getMarks() { return marks; }
-
         @Override
         public String toString() {
-            return String.format("%-12s %d", name, marks);
+            return name + " " + marks;
         }
     }
 
     public static void main(String[] args) {
+
         List<Student> students = Arrays.asList(
-            new Student("Priya",   88),
-            new Student("Aditya",  95),
-            new Student("Zara",    88),
-            new Student("Rohan",   72),
-            new Student("Meera",   95),
-            new Student("Karan",   80),
-            new Student("Amit",    72),
-            new Student("Sneha",   88)
+            new Student("Priya", 88),
+            new Student("Aditya", 95),
+            new Student("Zara", 88),
+            new Student("Rohan", 72),
+            new Student("Meera", 95),
+            new Student("Karan", 80),
+            new Student("Amit", 72),
+            new Student("Sneha", 88)
         );
 
-        System.out.println("Original list:");
-        printTable(students);
+        students.sort( Comparator.comparingInt((Student s) -> s.marks).reversed().thenComparing(s -> s.name) );
 
-        // Comparator: marks descending, then name ascending
-        Comparator<Student> comparator =
-            Comparator.comparingInt(Student::getMarks)
-                      .reversed()
-                      .thenComparing(Student::getName);
-
-        students.sort(comparator);
-
-        System.out.println("\nSorted (marks ↓, name ↑):");
-        printTable(students);
-    }
-
-    private static void printTable(List<Student> list) {
-        System.out.println(String.format("  %-12s %s", "Name", "Marks"));
-        System.out.println("  " + "-".repeat(20));
-        list.forEach(s -> System.out.println("  " + s));
+        for (Student s : students) {
+            System.out.println(s);
+        }
     }
 }
